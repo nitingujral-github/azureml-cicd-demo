@@ -1,0 +1,41 @@
+name: Train and Test Model on Push
+
+on:
+  push:
+    paths:
+      - 'code/**'
+      - 'environments/**'
+
+jobs:
+  build-train-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run unit tests
+      run: |
+        pytest code/test_model.py
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Train model in Azure ML
+      uses: Azure/ml-cli@v1
+      with:
+        script: code/train.py
+        environment: environments/train-env.yml
+        workspace-file: .azureml/workspace.json
