@@ -4,5 +4,5 @@ command: >
 environment:
   conda_file: ../environments/train-env.yml
   image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04
-compute: azureml:nitingujral1
+compute: azureml:cpu-cluster
 experiment_name: github-actions-experiment
