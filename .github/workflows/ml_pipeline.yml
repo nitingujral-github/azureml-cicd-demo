@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
 
@@ -33,9 +33,11 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Train model in Azure ML
-      uses: Azure/ml-cli@v1
-      with:
-        script: code/train.py
-        environment: environments/train-env.yml
-        workspace-file: .azureml/workspace.json
+    - name: Install Azure ML CLI
+      run: |
+        pip install azure-cli
+        az extension add -n ml -y
+
+    - name: Submit Azure ML Job
+      run: |
+        az ml job create --file code/train-job.yml --workspace-name NitinWS --resource-group NitinRG --subscription-id 00128d7e-f50a-422e-9809-46395aba5b32
